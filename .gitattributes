@@ -1,0 +1,13 @@
+# Forcer l'auto-détection des fins de ligne (LF ou CRLF) en fonction du système
+* text=auto
+
+# Forcer les fichiers shell (.sh) à utiliser des fins de ligne LF (utile pour Linux/macOS)
+*.sh text eol=lf
+
+# Forcer les fichiers batch Windows (.bat et .cmd) à utiliser des fins de ligne CRLF
+*.bat text eol=crlf
+*.cmd text eol=crlf
+
+# Traiter les fichiers Maven Wrapper pour qu'ils utilisent LF sur Linux/macOS
+mvnw text eol=lf
+mvnw.cmd text eol=crlf

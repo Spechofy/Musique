@@ -15,5 +15,19 @@ services:
     ports:
       - "5432:5432"
 
+  music-service:
+    build:
+      context: ./Musique
+      dockerfile: Dockerfile
+    container_name: spechofy_music_service
+    depends_on:
+      - postgres
+    ports:
+      - "7272:7272"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://spechofy_music_db:5432/music_db
+      SPRING_DATASOURCE_USERNAME: music_user
+      SPRING_DATASOURCE_PASSWORD: music_password
+
 volumes:
   postgres_data:
