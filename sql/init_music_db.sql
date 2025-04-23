@@ -11,8 +11,8 @@ CREATE TABLE IF NOT EXISTS Profil (
 -- Création de la table Playlist
 CREATE TABLE IF NOT EXISTS Playlist (
     PlaylistId SERIAL PRIMARY KEY,
-    Name VARCHAR(255) NOT NULL,
-    Description TEXT,
+    Name VARCHAR(550) NOT NULL UNIQUE,
+    Description VARCHAR(550),
     ProfilId INT,
     FOREIGN KEY (ProfilId) REFERENCES Profil(ProfilId)
 );
@@ -20,9 +20,9 @@ CREATE TABLE IF NOT EXISTS Playlist (
 -- Création de la table Musique
 CREATE TABLE IF NOT EXISTS Musique (
     MusicId SERIAL PRIMARY KEY,
-    Title VARCHAR(255) NOT NULL,
-    Artiste VARCHAR(255),
-    Genre VARCHAR(100),
+    Title VARCHAR(550) NOT NULL,
+    Artiste VARCHAR(550),
+    Genre VARCHAR(550),
     PlaylistId INT,
     FOREIGN KEY (PlaylistId) REFERENCES Playlist(PlaylistId)
 );

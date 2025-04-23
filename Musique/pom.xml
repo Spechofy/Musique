@@ -30,41 +30,57 @@
 		<java.version>17</java.version>
 	</properties>
 	<dependencies>
+    <!-- Dépendance pour Spring Web, nécessaire pour @RestController et @GetMapping -->
+    <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-web</artifactId>
+    </dependency>
 
-		<!-- Dépendance pour Spring Web, nécessaire pour @RestController et @GetMapping -->
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-web</artifactId>
-		</dependency>
 
-		<!-- Dépendance pour Spring WebFlux, nécessaire pour Mono et les APIs réactives -->
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-webflux</artifactId>
-		</dependency>
+    <dependency>
+        <groupId>org.postgresql</groupId>
+        <artifactId>postgresql</artifactId>
+        <version>42.5.0</version> <!-- Ensure this is the correct version -->
+    </dependency>
 
-		<!-- Dépendance pour Reactor, nécessaire pour Mono et Flux -->
-		<dependency>
-			<groupId>io.projectreactor</groupId>
-			<artifactId>reactor-core</artifactId>
-		</dependency>
 
-		<!-- Si tu utilises Spring Security, ajoute cette dépendance aussi -->
-		<!-- <dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-security</artifactId>
-		</dependency>-->
-		<dependency> 
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter</artifactId>
-		</dependency>
+    <!-- Dépendance pour Spring Data JPA (inclut Jakarta Persistence) -->
+    <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-data-jpa</artifactId>
+    </dependency>
 
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-test</artifactId>
-			<scope>test</scope>
-		</dependency>
-	</dependencies>
+    <!-- Dépendance pour la base de données, ici avec H2 (ou remplacer par MySQL, PostgreSQL selon ton choix) -->
+    <dependency>
+        <groupId>com.h2database</groupId>
+        <artifactId>h2</artifactId>
+        <scope>runtime</scope>
+    </dependency>
+
+    <!-- Dépendance pour Reactor, nécessaire pour Mono et Flux -->
+    <dependency>
+        <groupId>io.projectreactor</groupId>
+        <artifactId>reactor-core</artifactId>
+    </dependency>
+
+    <!-- Si tu utilises Spring Security, ajoute cette dépendance aussi -->
+    <!-- <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-security</artifactId>
+    </dependency>-->
+
+    <dependency> 
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter</artifactId>
+    </dependency>
+
+    <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-test</artifactId>
+        <scope>test</scope>
+    </dependency>
+</dependencies>
+
 
 	<build>
 		<plugins>

@@ -1,4 +1,4 @@
-package Spechofy.Musique.dto;
+package Spechofy.Musique.dto.Spotify;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
