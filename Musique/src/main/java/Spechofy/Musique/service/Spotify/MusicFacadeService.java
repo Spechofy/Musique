@@ -74,7 +74,6 @@ public class MusicFacadeService {
 
             return playlists;
         } catch (HttpClientErrorException | HttpServerErrorException e) {
-            // Log l'erreur ou gérer l'exception selon le besoin
             throw new RuntimeException("Error while fetching playlists from Spotify: " + e.getMessage());
         }
     }

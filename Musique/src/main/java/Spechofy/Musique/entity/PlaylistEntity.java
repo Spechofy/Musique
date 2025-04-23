@@ -20,7 +20,6 @@ public class PlaylistEntity {
     @Column(name = "profilid")
     private Integer profilId;
 
-    // Getters & Setters
 
     public Long getPlaylistId() {
         return playlistId;

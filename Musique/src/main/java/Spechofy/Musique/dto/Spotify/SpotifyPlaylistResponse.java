@@ -25,7 +25,7 @@ public class SpotifyPlaylistResponse {
 
     public List<PlaylistDto> toPlaylistDtoList() {
         if (items == null) {
-            return List.of(); // retourne une liste vide pour éviter les NullPointerExceptions
+            return List.of();
         }
     
         return items.stream()

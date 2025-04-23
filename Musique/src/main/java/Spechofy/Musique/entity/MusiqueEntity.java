@@ -23,7 +23,7 @@ public class MusiqueEntity {
     @Column(name = "playlistid")
     private Integer playlistId;
 
-    // Getters & Setters
+    
     public Long getMusicId() {
         return musicId;
     }

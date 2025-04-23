@@ -25,6 +25,27 @@ public class SpotifyController {
     @Autowired
     private MusicFacadeService musicFacadeService;
 
+    @GetMapping("/")
+    public String home() {
+        return """
+            <html>
+                <body style="font-family: sans-serif;">
+                    <h3>🔧 Voici les endpoints disponibles pour interagir avec l'API Spotify :</h3>
+                    <ul>
+                        <li>▶️ <code>/spotify/authorize</code> – Lance la connexion à l'API Spotify (OAuth)</li>
+                        <li>🔄 <code>/spotify/callback?code=xxx</code> – Callback de Spotify, échange le code contre un token et récupère les playlists</li>
+                        <li>🧾 <code>/spotify/token</code> – Récupère le token d'accès actuel</li>
+                        <li>🎤 <code>/spotify/artists?access_token=xxx</code> – Récupère les artistes préférés de l'utilisateur (token requis)</li>
+                        <li>🎶 <code>/spotify/playlists</code> – Récupère les playlists de l'utilisateur connecté</li>
+                    </ul>
+                    <p>✨ Amusez-vous bien avec l'API Spotify !</p>
+                </body>
+            </html>
+            """;
+    }
+    
+
+
     @GetMapping("/token")
     public ResponseEntity<String> getToken() {
         String token = spotifyAuthService.getAccessToken();
@@ -50,7 +71,7 @@ public class SpotifyController {
     @GetMapping("/authorize")
     public ResponseEntity<Void> authorize() {
         String clientId = "24a2559b1dcc4ea5aa895fc40dbb5e8f";
-        String redirectUri = "http://127.0.0.1:7272/spotify/callback"; // doit matcher Spotify Dev Console
+        String redirectUri = "http://127.0.0.1:7272/spotify/callback";
         String scopes = "user-top-read playlist-read-private";
 
         String url = "https://accounts.spotify.com/authorize?" +
@@ -62,24 +83,20 @@ public class SpotifyController {
         return ResponseEntity.status(302).header("Location", url).build();
     }
 
-    
-
 
     @GetMapping("/callback")
-public ResponseEntity<String> callback(@RequestParam("code") String code) {
-    try {
-        String accessToken = spotifyAuthService.exchangeCodeForToken(code);
-        List<Map<String, Object>> playlists = spotifyAuthService.fetchUserPlaylists();
-        
-        // Tu peux logguer les playlists ici si tu veux
-        System.out.println("Playlists récupérées : " + playlists.size());
+    public ResponseEntity<String> callback(@RequestParam("code") String code) {
+        try {
+            String accessToken = spotifyAuthService.exchangeCodeForToken(code);
+            List<Map<String, Object>> playlists = spotifyAuthService.fetchUserPlaylists();
+            
+            System.out.println("Playlists récupérées : " + playlists.size());
 
-        return ResponseEntity.ok("✅ Playlists bien insérées !");
-    } catch (Exception e) {
-        e.printStackTrace();
-        return ResponseEntity.status(500).body("❌ Une erreur est survenue : " + e.getMessage());
+            return ResponseEntity.ok("✅ Playlists bien insérées !");
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(500).body("❌ Une erreur est survenue : " + e.getMessage());
+        }
     }
-}
-
 
 }

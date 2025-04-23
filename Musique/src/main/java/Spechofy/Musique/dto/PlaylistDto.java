@@ -13,7 +13,7 @@ public class PlaylistDto {
     }
     
 
-    // Getters and setters
+    
     public String getName() {
         return name;
     }

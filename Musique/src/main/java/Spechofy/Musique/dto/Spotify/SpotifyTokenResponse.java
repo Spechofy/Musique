@@ -13,7 +13,7 @@ public class SpotifyTokenResponse {
     @JsonProperty("expires_in")
     private int expiresIn;
 
-    // Getters
+    
     public String getAccessToken() {
         return accessToken;
     }

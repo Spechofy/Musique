@@ -9,7 +9,7 @@ public class ArtistDto {
         this.id = id;
     }
 
-    // Getters and setters
+    
     public String getName() {
         return name;
     }

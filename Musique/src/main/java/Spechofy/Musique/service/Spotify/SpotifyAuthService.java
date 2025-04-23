@@ -90,11 +90,9 @@ public class SpotifyAuthService {
             entity.setDescription(description);
             entity.setProfilId(1); // 🧪 à adapter avec un vrai ID plus tard
     
-            // Vérifie si elle n'existe pas déjà
+            
             if (!playlistRepository.existsByName(name)) {
                 PlaylistEntity saved = playlistRepository.save(entity);
-    
-                // 🔥 Enregistrement des musiques
                 saveTracksForPlaylist(spotifyPlaylistId, saved.getPlaylistId());
             }
         }
@@ -128,13 +126,13 @@ public class SpotifyAuthService {
                 MusiqueEntity musique = new MusiqueEntity();
                 musique.setTitle(title);
                 musique.setArtiste(artist);
-                musique.setGenre(null); // Toujours optionnel ici
+                musique.setGenre(null); // A voir pour modifier
                 musique.setPlaylistId(localPlaylistId.intValue());
     
                 MusiqueRepository.save(musique);
             }
     
-            url = (String) response.getBody().get("next"); // pagination
+            url = (String) response.getBody().get("next");
         }
     }
     
