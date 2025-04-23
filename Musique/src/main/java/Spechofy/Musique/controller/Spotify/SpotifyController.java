@@ -85,18 +85,35 @@ public class SpotifyController {
 
 
     @GetMapping("/callback")
-    public ResponseEntity<String> callback(@RequestParam("code") String code) {
+    public ResponseEntity<Void> callback(@RequestParam("code") String code) {
         try {
             String accessToken = spotifyAuthService.exchangeCodeForToken(code);
             List<Map<String, Object>> playlists = spotifyAuthService.fetchUserPlaylists();
             
             System.out.println("Playlists récupérées : " + playlists.size());
 
-            return ResponseEntity.ok("✅ Playlists bien insérées !");
+            
+            return ResponseEntity.status(302)
+                    .header("Location", "/spotify/success")
+                    .build();
+
         } catch (Exception e) {
             e.printStackTrace();
-            return ResponseEntity.status(500).body("❌ Une erreur est survenue : " + e.getMessage());
+            return ResponseEntity.status(500)
+                    .header("Location", "/spotify/error?message=" + e.getMessage())
+                    .build();
         }
     }
+
+    @GetMapping("/success")
+    public String success() {
+        return "✅ Connexion réussie et playlists récupérées ! Vous pouvez fermer cette page.";
+    }
+
+    @GetMapping("/error")
+    public String error(@RequestParam("message") String msg) {
+        return "❌ Une erreur est survenue : " + msg;
+    }
+
 
 }
