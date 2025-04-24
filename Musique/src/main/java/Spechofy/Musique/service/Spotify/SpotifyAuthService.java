@@ -12,6 +12,7 @@ import Spechofy.Musique.entity.PlaylistEntity;
 import Spechofy.Musique.repository.MusiqueRepository;
 import Spechofy.Musique.repository.PlaylistRepository;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -135,6 +136,98 @@ public class SpotifyAuthService {
             url = (String) response.getBody().get("next");
         }
     }
+
+    public void refreshDatabase() {
+        List<Map<String, Object>> playlists = fetchUserPlaylists();
     
+        for (Map<String, Object> playlist : playlists) {
+            String name = (String) playlist.get("name");
+            String description = (String) playlist.get("description");
+            String spotifyPlaylistId = (String) playlist.get("id");
+    
+            PlaylistEntity entity = playlistRepository.findByName(name).orElse(null);
+    
+            // Si la playlist n'existe pas encore
+            if (entity == null) {
+                entity = new PlaylistEntity();
+                entity.setName(name);
+                entity.setDescription(description);
+                entity.setProfilId(1); // à adapter
+                entity = playlistRepository.save(entity);
+            }
+    
+            Long localPlaylistId = entity.getPlaylistId();
+    
+            // Récupère les musiques actuelles de Spotify
+            List<MusiqueEntity> spotifyTracks = getTracksFromSpotifyPlaylist(spotifyPlaylistId, localPlaylistId);
+    
+            // Récupère les musiques locales
+            List<MusiqueEntity> localTracks = MusiqueRepository.findByPlaylistId(localPlaylistId.intValue());
+    
+            // Supprime celles qui n'existent plus
+            for (MusiqueEntity localTrack : localTracks) {
+                boolean stillExists = spotifyTracks.stream().anyMatch(
+                    t -> t.getTitle().equals(localTrack.getTitle()) &&
+                         t.getArtiste().equals(localTrack.getArtiste())
+                );
+    
+                if (!stillExists) {
+                    MusiqueRepository.delete(localTrack);
+                }
+            }
+    
+            // Ajoute celles qui sont nouvelles
+            for (MusiqueEntity spotifyTrack : spotifyTracks) {
+                boolean alreadyExists = localTracks.stream().anyMatch(
+                    t -> t.getTitle().equals(spotifyTrack.getTitle()) &&
+                         t.getArtiste().equals(spotifyTrack.getArtiste())
+                );
+    
+                if (!alreadyExists) {
+                    MusiqueRepository.save(spotifyTrack);
+                }
+            }
+        }
+    }
+
+    public List<MusiqueEntity> getTracksFromSpotifyPlaylist(String spotifyPlaylistId, Long localPlaylistId) {
+        RestTemplate restTemplate = new RestTemplate();
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setBearerAuth(this.accessToken);
+        HttpEntity<Void> request = new HttpEntity<>(headers);
+
+        List<MusiqueEntity> result = new ArrayList<>();
+        String url = "https://api.spotify.com/v1/playlists/" + spotifyPlaylistId + "/tracks";
+        
+        while (url != null) {
+            ResponseEntity<Map> response = restTemplate.exchange(url, HttpMethod.GET, request, Map.class);
+
+            List<Map<String, Object>> items = (List<Map<String, Object>>) response.getBody().get("items");
+
+            for (Map<String, Object> item : items) {
+                Map<String, Object> track = (Map<String, Object>) item.get("track");
+
+                if (track == null) continue;
+
+                String title = (String) track.get("name");
+                List<Map<String, Object>> artists = (List<Map<String, Object>>) track.get("artists");
+                String artist = artists.size() > 0 ? (String) artists.get(0).get("name") : "Inconnu";
+
+                MusiqueEntity musique = new MusiqueEntity();
+                musique.setTitle(title);
+                musique.setArtiste(artist);
+                musique.setGenre(null);
+                musique.setPlaylistId(localPlaylistId.intValue());
+
+                result.add(musique);
+            }
+
+            url = (String) response.getBody().get("next"); // ✅ C’est déjà un String
+        }
+
+        return result;
+    }
+
     
 }

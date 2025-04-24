@@ -115,5 +115,20 @@ public class SpotifyController {
         return "❌ Une erreur est survenue : " + msg;
     }
 
+    @GetMapping("/refresh")
+    public ResponseEntity<String> refreshDatabase() {
+        try {
+            spotifyAuthService.refreshDatabase();
+            
+            return ResponseEntity.ok("✅ La base de données a été rafraîchie avec succès !");
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(500).body("❌ Une erreur est survenue : " + e.getMessage());
+        }
+    }
+
+
+
+
 
 }
