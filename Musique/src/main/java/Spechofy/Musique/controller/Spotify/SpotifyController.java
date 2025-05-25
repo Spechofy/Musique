@@ -118,7 +118,13 @@ public class SpotifyController {
     @GetMapping("/success")
     public String success() throws InterruptedException {
         MusicProducer.requestUsers();
+        Thread.sleep(1000);
         MusicProducer.sendAllPlaylists();
+        Thread.sleep(1000);
+        MusicProducer.sendAllMusiques();
+        Thread.sleep(1000);
+
+        MusicProducer.sendAllMusiquesFav();
         Thread.sleep(2000);
         return "✅ Connexion réussie et playlists récupérées ! Vous pouvez fermer cette page.";
     }
@@ -132,6 +138,17 @@ public class SpotifyController {
     public ResponseEntity<String> refreshDatabase() {
         try {
             spotifyAuthService.refreshDatabase();
+            Thread.sleep(1000);
+
+            MusicProducer.requestUsers();
+            Thread.sleep(1000);
+            MusicProducer.sendAllPlaylists();
+            Thread.sleep(1000);
+            MusicProducer.sendAllMusiques();
+            Thread.sleep(1000);
+
+            MusicProducer.sendAllMusiquesFav();
+            Thread.sleep(2000);
             
             return ResponseEntity.ok("✅ La base de données a été rafraîchie avec succès !");
         } catch (Exception e) {
