@@ -35,7 +35,7 @@ public class MusicProducer {
         ObjectMapper mapper = new ObjectMapper();
         try {
             String json = mapper.writeValueAsString(favs);
-            kafkaTemplate.send("musique-fav-topic", json);
+            kafkaTemplate.send("music_fav_topic", json);
         } catch (JsonProcessingException e) {
             e.printStackTrace();
         }
@@ -50,7 +50,7 @@ public class MusicProducer {
         ObjectMapper mapper = new ObjectMapper();
         try {
             String playlistsJson = mapper.writeValueAsString(playlists);
-            kafkaTemplate.send("playlist-topic", playlistsJson);
+            kafkaTemplate.send("playlist_topic", playlistsJson);
         } catch (JsonProcessingException e) {
             e.printStackTrace();
         }
@@ -64,7 +64,7 @@ public class MusicProducer {
         ObjectMapper mapper = new ObjectMapper();
         try {
             String json = mapper.writeValueAsString(musiques);
-            kafkaTemplate.send("musique-topic", json);
+            kafkaTemplate.send("music_topic", json);
         } catch (JsonProcessingException e) {
             e.printStackTrace();
         }
