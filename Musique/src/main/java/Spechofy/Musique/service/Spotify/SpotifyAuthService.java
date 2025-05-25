@@ -7,12 +7,17 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
+import Spechofy.Musique.entity.ArtisteEntity;
 import Spechofy.Musique.entity.MusiqueEntity;
+import Spechofy.Musique.entity.MusiqueFavEntity;
 import Spechofy.Musique.entity.PlaylistEntity;
+import Spechofy.Musique.repository.ArtistesRepository;
+import Spechofy.Musique.repository.MusiqueFavRepository;
 import Spechofy.Musique.repository.MusiqueRepository;
 import Spechofy.Musique.repository.PlaylistRepository;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -30,6 +35,13 @@ public class SpotifyAuthService {
 
     @Autowired
     private MusiqueRepository MusiqueRepository;
+
+    @Autowired
+    private ArtistesRepository artistesRepository;
+
+    @Autowired
+    private MusiqueFavRepository musiqueFavRepository;
+
 
 
     public String getAccessToken() {
@@ -228,6 +240,135 @@ public class SpotifyAuthService {
 
         return result;
     }
+
+    public void fetchTopArtists(int profilId) {
+        RestTemplate restTemplate = new RestTemplate();
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setBearerAuth(this.accessToken);
+        headers.setAccept(List.of(MediaType.APPLICATION_JSON));
+        HttpEntity<Void> request = new HttpEntity<>(headers);
+
+        String url = "https://api.spotify.com/v1/me/top/artists?limit=5";
+
+        ResponseEntity<Map> response = restTemplate.exchange(url, HttpMethod.GET, request, Map.class);
+        List<Map<String, Object>> artists = (List<Map<String, Object>>) response.getBody().get("items");
+
+        int rang = 1;
+
+        for (Map<String, Object> artist : artists) {
+            if (artistesRepository.existsByProfilIdAndRang(profilId, rang)) {
+                rang++;
+                continue;
+            }
+            
+            String name = (String) artist.get("name");
+            List<String> genres = (List<String>) artist.get("genres");
+
+            ArtisteEntity entity = new ArtisteEntity();
+            entity.setName(name);
+            entity.setGenres(genres);
+            entity.setRang(rang++);
+            entity.setProfil(profilId); // 🔗 Associe à un utilisateur
+
+            artistesRepository.save(entity);
+        }
+    }
+
+    public void fetchTopTracks(int profilId) {
+        RestTemplate restTemplate = new RestTemplate();
+    
+        HttpHeaders headers = new HttpHeaders();
+        headers.setBearerAuth(this.accessToken);
+        headers.setAccept(List.of(MediaType.APPLICATION_JSON));
+        HttpEntity<Void> request = new HttpEntity<>(headers);
+    
+        String url = "https://api.spotify.com/v1/me/top/tracks?limit=5";
+    
+        ResponseEntity<Map> response = restTemplate.exchange(url, HttpMethod.GET, request, Map.class);
+        List<Map<String, Object>> tracks = (List<Map<String, Object>>) response.getBody().get("items");
+    
+        int rang = 1;
+    
+        for (Map<String, Object> track : tracks) {
+            // Vérification avant insertion
+            if (musiqueFavRepository.existsByProfilIdAndRang(profilId, rang)) {
+                rang++;
+                continue; // Déjà existant, on saute
+            }
+    
+            String title = (String) track.get("name");
+            List<Map<String, Object>> artists = (List<Map<String, Object>>) track.get("artists");
+            String artiste = artists.size() > 0 ? (String) artists.get(0).get("name") : "Inconnu";
+    
+            MusiqueFavEntity entity = new MusiqueFavEntity();
+            entity.setTitle(title);
+            entity.setArtiste(artiste);
+            entity.setGenre(null);
+            entity.setRang(rang++);
+            entity.setProfil(profilId);
+    
+            musiqueFavRepository.save(entity);
+        }
+    }
+
+    public Map<String, String> getCurrentlyPlaying() {
+        RestTemplate restTemplate = new RestTemplate();
+    
+        HttpHeaders headers = new HttpHeaders();
+        headers.setBearerAuth(this.accessToken);
+        headers.setAccept(List.of(MediaType.APPLICATION_JSON));
+        HttpEntity<Void> request = new HttpEntity<>(headers);
+    
+        ResponseEntity<Map> response = restTemplate.exchange(
+            "https://api.spotify.com/v1/me/player/currently-playing",
+            HttpMethod.GET,
+            request,
+            Map.class
+        );
+    
+        if (response.getStatusCode() == HttpStatus.NO_CONTENT) {
+            // Aucun morceau en cours
+            return null;
+        }
+    
+        Map<String, Object> body = response.getBody();
+        if (body == null || body.get("item") == null) {
+            return null; // Pas d'item
+        }
+    
+        Map<String, Object> item = (Map<String, Object>) body.get("item");
+    
+        // Récupération du titre
+        Object titleObj = item.get("name");
+        String title = titleObj != null ? titleObj.toString() : "Titre inconnu";
+    
+        // Récupération de l'artiste
+        List<Map<String, Object>> artists = (List<Map<String, Object>>) item.get("artists");
+        String artistName = artists != null && !artists.isEmpty() ? artists.get(0).get("name").toString() : "Artiste inconnu";
+    
+        // (Optionnel) Récupération de l'URL de l'album ou de la musique
+        Map<String, Object> externalUrls = (Map<String, Object>) item.get("external_urls");
+        String spotifyUrl = externalUrls != null ? externalUrls.get("spotify").toString() : null;
+    
+        // (Optionnel) Récupération de l'image de l'album
+        Map<String, Object> album = (Map<String, Object>) item.get("album");
+        List<Map<String, Object>> images = album != null ? (List<Map<String, Object>>) album.get("images") : null;
+        String albumImageUrl = images != null && !images.isEmpty() ? images.get(0).get("url").toString() : null;
+    
+        Map<String, String> result = new HashMap<>();
+        result.put("title", title);
+        result.put("artist", artistName);
+        if (spotifyUrl != null) {
+            result.put("spotify_url", spotifyUrl);
+        }
+        if (albumImageUrl != null) {
+            result.put("album_image", albumImageUrl);
+        }
+    
+        return result;
+    }
+    
 
     
 }

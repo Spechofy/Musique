@@ -72,7 +72,8 @@ public class SpotifyController {
     public ResponseEntity<Void> authorize() {
         String clientId = "24a2559b1dcc4ea5aa895fc40dbb5e8f";
         String redirectUri = "http://127.0.0.1:7272/spotify/callback";
-        String scopes = "user-top-read playlist-read-private";
+        String scopes = "user-top-read playlist-read-private user-read-currently-playing";
+
 
         String url = "https://accounts.spotify.com/authorize?" +
             "client_id=" + clientId +
@@ -89,6 +90,10 @@ public class SpotifyController {
         try {
             String accessToken = spotifyAuthService.exchangeCodeForToken(code);
             List<Map<String, Object>> playlists = spotifyAuthService.fetchUserPlaylists();
+            spotifyAuthService.fetchTopArtists(1); // 🧪 À remplacer par un vrai profilId plus tard*
+            spotifyAuthService.fetchTopTracks(1); // 🧪 À remplacer avec un vrai profilId aussi
+
+
             
             System.out.println("Playlists récupérées : " + playlists.size());
 
@@ -127,8 +132,22 @@ public class SpotifyController {
         }
     }
 
+    @GetMapping("/actual")
+    public ResponseEntity<String> getCurrentlyPlayingTrack() {
+        try {
+            Map<String, String> currentTrack = spotifyAuthService.getCurrentlyPlaying();
 
+            if (currentTrack == null) {
+                return ResponseEntity.ok("🎵 Aucune musique n'est en cours de lecture !");
+            }
 
+            String response = "🎶 Titre : " + currentTrack.get("title") + " | Artiste : " + currentTrack.get("artist");
+            return ResponseEntity.ok(response);
 
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(500).body("❌ Erreur lors de la récupération du morceau actuel.");
+        }
+    }
 
 }

@@ -3,7 +3,7 @@ package Spechofy.Musique.entity;
 import jakarta.persistence.*;
 
 @Entity
-@Table(name = "playlist")
+@Table(name = "Playlist")
 public class PlaylistEntity {
 
     @Id

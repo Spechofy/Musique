@@ -10,7 +10,7 @@ public class IndexController {
 
     @GetMapping("/")
     public String home() {
-        return "Tester /spotify, /deezer ou /apple après l'URL";
+        return "Tester /spotify/ pour avoir accès aux commandes de spotify, /deezer/ pour avoir accès aux commandes de deezer ou /apple/ pour avoir accès aux commandes de apple music après l'URL";
     }
 
 }
