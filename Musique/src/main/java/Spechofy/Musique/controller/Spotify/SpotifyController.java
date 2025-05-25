@@ -14,6 +14,7 @@ import Spechofy.Musique.dto.ArtistDto;
 import Spechofy.Musique.dto.PlaylistDto;
 import Spechofy.Musique.service.Spotify.MusicFacadeService;
 import Spechofy.Musique.service.Spotify.SpotifyAuthService;
+import Spechofy.Musique.MusicProducer;
 
 @RestController
 @RequestMapping("/spotify")
@@ -24,6 +25,10 @@ public class SpotifyController {
 
     @Autowired
     private MusicFacadeService musicFacadeService;
+
+
+    @Autowired
+    private MusicProducer MusicProducer;
 
     @GetMapping("/")
     public String home() {
@@ -111,7 +116,10 @@ public class SpotifyController {
     }
 
     @GetMapping("/success")
-    public String success() {
+    public String success() throws InterruptedException {
+        MusicProducer.requestUsers();
+        MusicProducer.sendAllPlaylists();
+        Thread.sleep(2000);
         return "✅ Connexion réussie et playlists récupérées ! Vous pouvez fermer cette page.";
     }
 
