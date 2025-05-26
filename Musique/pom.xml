@@ -27,8 +27,10 @@
 		<url/>
 	</scm>
 	<properties>
-		<java.version>17</java.version>
-	</properties>
+        <java.version>17</java.version>
+        <sonar.projectKey>spechofy-musique</sonar.projectKey>
+        <sonar.projectName>spechofy-musique</sonar.projectName>
+    </properties>
 	<dependencies>
     <!-- Dépendance pour Spring Web, nécessaire pour @RestController et @GetMapping -->
     <dependency>
@@ -68,12 +70,6 @@
         <groupId>io.projectreactor</groupId>
         <artifactId>reactor-core</artifactId>
     </dependency>
-
-    <!-- Si tu utilises Spring Security, ajoute cette dépendance aussi -->
-    <!-- <dependency>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-starter-security</artifactId>
-    </dependency>-->
 
     <dependency> 
         <groupId>org.springframework.boot</groupId>
