@@ -50,14 +50,6 @@ public class SpotifyController {
     }
     
 
-
-    @GetMapping("/token")
-    public ResponseEntity<String> getToken() {
-        String token = spotifyAuthService.getAccessToken();
-        return ResponseEntity.ok(token);
-    }
-    
-
     @GetMapping("/artists")
     public ResponseEntity<List<ArtistDto>> getTopArtists(@RequestParam("access_token") String token) {
         List<ArtistDto> artists = musicFacadeService.getTopArtists();
