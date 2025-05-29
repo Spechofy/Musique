@@ -16,7 +16,7 @@ services:
 
   music-service:
     build:
-      context: .
+      context: ./Musique
       dockerfile: Dockerfile
     container_name: spechofy_music_service
     depends_on:
